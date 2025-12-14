@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "name": "أحمد العلي",
+    "email": "ahmed.alali@example.com",
+    "age": 21,
+    "isActive": true
+  },
+  {
+    "id": 2,
+    "name": "سارة منصور",
+    "email": "sara.mansour@example.com",
+    "age": 22,
+    "isActive": false
+  },
+  {
+    "id": 3,
+    "name": "محمد يوسف",
+    "email": "mohamed.youssef@example.com",
+    "age": 20,
+    "isActive": true
+  },
+  {
+    "id": 4,
+    "name": "ليلى خالد",
+    "email": "layla.khaled@example.com",
+    "age": 23,
+    "isActive": true
+  },
+  {
+    "id": 5,
+    "name": "خالد إبراهيم",
+    "email": "khaled.ibrahim@example.com",
+    "age": 19,
+    "isActive": false
+  },
+  {
+    "id": 6,
+    "name": "ريم حسين",
+    "email": "reem.hussein@example.com",
+    "age": 21,
+    "isActive": true
+  },
+  {
+    "id": 7,
+    "name": "يوسف سامي",
+    "email": "youssef.sami@example.com",
+    "age": 22,
+    "isActive": true
+  },
+  {
+    "id": 8,
+    "name": "منى جابر",
+    "email": "mona.jaber@example.com",
+    "age": 20,
+    "isActive": false
+  },
+  {
+    "id": 9,
+    "name": "فاطمة زهراء",
+    "email": "fatima.zahraa@example.com",
+    "age": 23,
+    "isActive": true
+  },
+  {
+    "id": 10,
+    "name": "علي حسن",
+    "email": "ali.hassan@example.com",
+    "age": 21,
+    "isActive": false
+  },
+  {
+    "id": 11,
+    "name": "Mazen",
+    "email": "mazen@mazenhesham.com",
+    "age": 89,
+    "isActive": true
+  }
+]

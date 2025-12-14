@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run JavaScript",
+      "type": "npm",
+      "script": "start",
+      "group": "build"
+    },
+    {
+      "label": "Run Python",
+      "type": "npm",
+      "script": "test-python",
+      "group": "build"
+    },
+    {
+      "label": "Run PHP",
+      "type": "npm",
+      "script": "test-php",
+      "group": "build"
+    },
+    {
+      "label": "Run C++",
+      "type": "npm",
+      "script": "test-cpp",
+      "group": "build"
+    },
+    {
+      "label": "Run Java",
+      "type": "npm",
+      "script": "test-java",
+      "group": "build"
+    },
+    {
+      "label": "Run All",
+      "type": "npm",
+      "script": "test-all",
+      "group": "build"
+    }
+  ]
+}

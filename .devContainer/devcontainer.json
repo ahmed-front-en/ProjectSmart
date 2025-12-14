@@ -1,0 +1,13 @@
+{
+  "name": "Smart Code Module 11",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-vscode.vscode-typescript-next"]
+    }
+  },
+  "postCreateCommand": "npm install"
+}
