@@ -177,5 +177,8 @@
   "python.linting.pylintEnabled": false,
   "python.linting.flake8Enabled": true,
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.typeCheckingMode": "basic"
+  "python.analysis.typeCheckingMode": "basic",
+  "Codegeex.GenerationPreference": "automatic",
+  "Codegeex.SidebarUI.LanguagePreference": "English",
+  "Codegeex.RepoIndex": true
 }

@@ -9,7 +9,6 @@
     "dev": "tsc && node dist/main.js",
     "watch": "tsc --watch",
     "populate-db": "ts-node src/scripts/populateDummyData.ts"
-
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
