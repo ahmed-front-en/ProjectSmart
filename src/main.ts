@@ -1,8 +1,12 @@
 import { Server } from "./Server";
-import DatabaseService from "./services/DatabaseService";
 
-//TODO: transform to singelton pattern
-const dbService = new DatabaseService();
+import dbService from "./services/DatabaseService";
+
+
+
+
+
 
 const server = new Server(dbService);
+
 server.start(3004);
