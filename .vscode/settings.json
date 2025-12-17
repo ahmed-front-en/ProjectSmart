@@ -109,7 +109,7 @@
   "extensions.ignoreRecommendations": false,
   // GitHub Copilot settings
   "github.copilot.enable": {
-    "*": false,
+    "*": true,
     "plaintext": false,
     "markdown": false,
     "scminput": false
@@ -180,5 +180,6 @@
   "python.analysis.typeCheckingMode": "basic",
   "Codegeex.GenerationPreference": "automatic",
   "Codegeex.SidebarUI.LanguagePreference": "English",
-  "Codegeex.RepoIndex": true
+  "Codegeex.RepoIndex": true,
+  "Codegeex.CommitMessageStyle": "ConventionalCommits"
 }
