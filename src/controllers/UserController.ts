@@ -25,9 +25,10 @@ export class UserController {
     if (isNaN(id)) {
       return res.status(400).json({ message: "Invalid user id" });
     }
+    const showPosts = req.query.show_posts === 'true';
 
     try {
-      const user = await this.userRepository.findById(id);
+      const user = await this.userRepository.findById(id, showPosts);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }

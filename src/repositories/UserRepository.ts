@@ -27,13 +27,32 @@ export class UserRepository {
         return this.findAll();
     }
 
-    async findById(id: number): Promise<User | null> {
-        const result = await this.db.query('SELECT * FROM "Users" WHERE id = $1', [id]);
-        if (result.rows.length === 0) {
-            return null;
+    async findById(id: number, showPosts = false): Promise<User | null> {
+        if (showPosts) {
+            const query = `
+                SELECT u.*, (
+                    SELECT COALESCE(JSON_AGG(p.*), '[]'::json)
+                    FROM "Posts" p
+                    WHERE p."UserId" = u.id
+                ) as posts
+                FROM "Users" u
+                WHERE u.id = $1
+            `;
+            const result = await this.db.query(query, [id]);
+            if (result.rows.length === 0) {
+                return null;
+            }
+            const row = result.rows[0];
+            return new User(row.id, row.name, row.email, row.age, row.description, row.image, row.posts);
+
+        } else {
+            const result = await this.db.query('SELECT * FROM "Users" WHERE id = $1', [id]);
+            if (result.rows.length === 0) {
+                return null;
+            }
+            const row = result.rows[0];
+            return new User(row.id, row.name, row.email, row.age, row.description, row.image);
         }
-        const row = result.rows[0];
-        return new User(row.id, row.name, row.email, row.age, row.description, row.image);
     }
 
     async findByEmail(email: string): Promise<User | null> {
@@ -63,4 +82,3 @@ export class UserRepository {
     }
 
 }
-
