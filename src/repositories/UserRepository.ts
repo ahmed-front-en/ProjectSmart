@@ -27,7 +27,7 @@ export class UserRepository {
         return this.findAll();
     }
 
-    async findById(id: number, showPosts = false): Promise<User | null> {
+    async findById(id: number, showPosts : boolean = false): Promise<User | null> {
         if (showPosts) {
             const query = `
                 SELECT u.*, (

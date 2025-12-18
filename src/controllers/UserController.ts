@@ -22,9 +22,6 @@ export class UserController {
 
   getUserById = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid user id" });
-    }
     const showPosts = req.query.show_posts === 'true';
 
     try {
@@ -37,15 +34,8 @@ export class UserController {
       res.status(500).json({ message: "Error getting user" });
     }
   };
-
   createUser = async (req: Request, res: Response) => {
     const { name, email, age, description, image } = req.body;
-
-    if (!name || !email) {
-      return res
-        .status(400)
-        .json({ message: "Name and email are required" });
-    }
 
     try {
       const existingUser = await this.userRepository.findByEmail(email);
@@ -71,10 +61,6 @@ export class UserController {
     const id = Number(req.params.id);
     const { name, email, age, description, image } = req.body;
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid user id" });
-    }
-
     try {
       const updatedUser = await this.userRepository.update(
         id,
@@ -97,10 +83,6 @@ export class UserController {
 
   deleteUser = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid user id" });
-    }
 
     try {
       const success = await this.userRepository.delete(id);
