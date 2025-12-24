@@ -1,6 +1,6 @@
-import DatabaseService from "../services/DatabaseService";
+import { DatabaseService } from "../services/DatabaseService";
 
-const db = DatabaseService;
+const db = DatabaseService.getInstance();
 
 const resetAndSeed = async () => {
   try {
@@ -20,7 +20,7 @@ const resetAndSeed = async () => {
     console.log("✅ Database cleared");
 
     // رجّع الجداول لو مش موجودة
-    await db.initializeTables();
+    await db.sync();
 
     console.log("🌱 Seeding database...");
 

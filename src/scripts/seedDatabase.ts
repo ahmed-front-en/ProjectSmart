@@ -1,14 +1,13 @@
-import DatabaseService from "../services/DatabaseService";
+import { DatabaseService } from "../services/DatabaseService";
 
-const db = DatabaseService;
+const db = DatabaseService.getInstance();
 
 const seedDatabase = async () => {
   try {
     console.log("Starting database seeding...");
 
     // 1️⃣ نهيّأ الجداول (آمن)
-    await db.initializeTables();
-
+    await db.sync();
     // 2️⃣ Users (Upsert)
     const userIds = await seedUsers();
 

@@ -1,4 +1,4 @@
-export class Action {
+export class UserAction {
     id: number;
     type: 'like' | 'dislike' | 'save';
     PostId?: number;
@@ -12,12 +12,6 @@ export class Action {
       this.PostId = PostId;
       this.CommentId = CommentId;
 
-      //validate that iather postid or commentid is provided, but not both
-      if (
-        (PostId === undefined && CommentId === undefined) ||
-        (PostId !== undefined && CommentId !== undefined)
-      ) {
-        throw new Error("iather postid or commentid is provided, but not both");
-      }
+     
     }
 }

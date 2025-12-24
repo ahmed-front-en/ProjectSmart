@@ -1,12 +1,12 @@
 import { Server } from "./Server";
 
-import dbService from "./services/DatabaseService";
+import {DatabaseService} from "./services/DatabaseService";
 
 
 
 
 
-
+const dbService = DatabaseService.getInstance();
 const server = new Server(dbService);
 
 server.start(3004);
