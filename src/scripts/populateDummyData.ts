@@ -3,7 +3,7 @@ import { DatabaseService } from '../services/DatabaseService';
 
 async function populateDummyData(): Promise<void> {
   console.log('Starting to populate database with dummy data...');
-  const db = new DatabaseService();
+  const db = DatabaseService.getInstance();
 
   try {
     // Add Users
@@ -116,12 +116,10 @@ async function populateDummyData(): Promise<void> {
     console.log('Database successfully populated with dummy data!');
   } catch (error) {
     console.error('Error populating database:', error);
-  } finally {
-    await db.close();
-  }
+  } 
 }
 
 // Execute the function
-populateDummyData()
-  .then(() => console.log('Script completed'))
-  .catch(err => console.error('Script failed:', err));
+  populateDummyData()
+    .then(() => console.log('Script completed'))
+    .catch(err => console.error('Script failed:', err));

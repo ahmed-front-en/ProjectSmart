@@ -8,7 +8,8 @@
     "start": "node dist/main.js",
     "dev": "tsc && node dist/main.js",
     "watch": "tsc --watch",
-    "populate-db": "ts-node src/scripts/populateDummyData.ts"
+    "populate-db": "ts-node src/scripts/populateDummyData.ts",
+    "resetAndSeed": "ts-node src/scripts/resetAndSeed.ts"
 
   },
   "devDependencies": {

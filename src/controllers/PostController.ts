@@ -1,213 +1,153 @@
-import { Request, Response } from 'express';
-import { Post } from '../models/Post';
-import PostRepository from '../repositories/PostRepository';
-import UserRepository from '../repositories/UserRepository';
+
+import { Request, Response } from "express";
+import { PostRepository } from "../repositories/PostRepository";
+import { Post } from "../models/Post";
 
 export class PostController {
   private postRepository: PostRepository;
-  private userRepository: UserRepository;
 
   constructor() {
     this.postRepository = new PostRepository();
-    this.userRepository = new UserRepository();
   }
 
-  /**
-   * Get all posts with optional filtering
-   * @route GET /api/posts
-   */
-  async getAllPosts(req: Request, res: Response): Promise<void> {
+  getAllPosts = async (req: Request, res: Response) => {
     try {
-      const filters = {
-        title: req.query.title as string | undefined,
-        type: req.query.type as 'text' | 'video' | undefined,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
-        offset: req.query.offset ? parseInt(req.query.offset as string) : undefined
-      };
-
-      const posts = await this.postRepository.findAll(filters);
+      const posts = await this.postRepository.findAll();
       res.status(200).json(posts);
-    } catch (error) {
-      console.error('Failed to get posts:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    } catch {
+      res.status(500).json({ message: "Error getting posts" });
     }
-  }
+  };
 
-  /**
-   * Get post by ID
-   * @route GET /api/posts/:id
-   */
-  async getPostById(req: Request, res: Response): Promise<void> {
+  getPostById = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
     try {
-      const id = parseInt(req.params.id);
-
-      if (isNaN(id)) {
-        res.status(400).json({ message: 'Invalid post ID' });
-        return;
-      }
-
       const post = await this.postRepository.findById(id);
-
       if (!post) {
-        res.status(404).json({ message: 'Post not found' });
-        return;
+        return res.status(404).json({ message: "Post not found" });
       }
-
-      res.status(200).json(post);
-    } catch (error) {
-      console.error('Failed to get post by ID:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.json(post);
+    } catch {
+      res.status(500).json({ message: "Error getting post" });
     }
-  }
+  };
 
-  /**
-   * Get posts by user ID
-   * @route GET /api/users/:userId/posts
-   */
-  async getPostsByUserId(req: Request, res: Response): Promise<void> {
+  getPostsByUserId = async (req: Request, res: Response) => {
+    const userId = Number(req.params.userId);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+
     try {
-      const userId = parseInt(req.params.userId);
-
-      if (isNaN(userId)) {
-        res.status(400).json({ message: 'Invalid user ID' });
-        return;
-      }
-
-      // Check if user exists
-      const user = await this.userRepository.findById(userId);
-      if (!user) {
-        res.status(404).json({ message: 'User not found' });
-        return;
-      }
-
       const posts = await this.postRepository.findByUserId(userId);
       res.status(200).json(posts);
-    } catch (error) {
-      console.error('Failed to get posts by user ID:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    } catch {
+      res.status(500).json({ message: "Error getting posts by user" });
     }
-  }
+  };
 
-  /**
-   * Create a new post
-   * @route POST /api/posts
-   */
-  async createPost(req: Request, res: Response): Promise<void> {
+  searchPostsByTitle = async (req: Request, res: Response) => {
+    const { title } = req.query;
+    if (!title || typeof title !== "string") {
+      return res.status(400).json({ message: "Title query parameter is required" });
+    }
+
     try {
-      const { title, userId, content, type } = req.body;
+      const posts = await this.postRepository.findByTitle(title);
+      res.status(200).json(posts);
+    } catch {
+      res.status(500).json({ message: "Error searching posts" });
+    }
+  };
 
-      // Basic validation
-      if (!title || !userId || !content || !type) {
-        res.status(400).json({ message: 'Title, userId, content, and type are required' });
-        return;
-      }
+  createPost = async (req: Request, res: Response) => {
+    const { title, UserId, content, type } = req.body;
 
-      // Check if type is valid
-      if (type !== 'text' && type !== 'video') {
-        res.status(400).json({ message: 'Type must be either "text" or "video"' });
-        return;
-      }
+    if (!title || !UserId || !content || !type) {
+      return res
+        .status(400)
+        .json({ message: "Title, UserId, content, and type are required" });
+    }
 
-      // Check if user exists
-      const user = await this.userRepository.findById(parseInt(userId));
-      if (!user) {
-        res.status(404).json({ message: 'User not found' });
-        return;
-      }
+    if (type !== 'text' && type !== 'video') {
+      return res
+        .status(400)
+        .json({ message: "Type must be either 'text' or 'video'" });
+    }
 
-      const postData: Omit<Post, 'id'> = {
+    try {
+      const newPost = await this.postRepository.create(
         title,
-        userId: parseInt(userId),
+        UserId,
         content,
-        type: type as 'text' | 'video'
-      };
+        type
+      );
 
-      const newPost = await this.postRepository.create(postData);
       res.status(201).json(newPost);
-    } catch (error) {
-      console.error('Failed to create post:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    } catch {
+      res.status(500).json({ message: "Error creating post" });
     }
-  }
+  };
 
-  /**
-   * Update an existing post
-   * @route PUT /api/posts/:id
-   */
-  async updatePost(req: Request, res: Response): Promise<void> {
+  updatePost = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const { title, UserId, content, type } = req.body;
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
+    if (!title || !UserId || !content || !type) {
+      return res
+        .status(400)
+        .json({ message: "Title, UserId, content, and type are required" });
+    }
+
+    if (type !== 'text' && type !== 'video') {
+      return res
+        .status(400)
+        .json({ message: "Type must be either 'text' or 'video'" });
+    }
+
     try {
-      const id = parseInt(req.params.id);
+      const updatedPost = await this.postRepository.update(
+        id,
+        title,
+        UserId,
+        content,
+        type
+      );
 
-      if (isNaN(id)) {
-        res.status(400).json({ message: 'Invalid post ID' });
-        return;
+      if (!updatedPost) {
+        return res.status(404).json({ message: "Post not found" });
       }
 
-      // Check if post exists
-      const existingPost = await this.postRepository.findById(id);
-      if (!existingPost) {
-        res.status(404).json({ message: 'Post not found' });
-        return;
-      }
-
-      const { title, userId, content, type } = req.body;
-
-      // If userId is being updated, check if the user exists
-      if (userId !== undefined && userId !== existingPost.userId) {
-        const user = await this.userRepository.findById(parseInt(userId));
-        if (!user) {
-          res.status(404).json({ message: 'User not found' });
-          return;
-        }
-      }
-
-      // Check if type is valid when updating
-      if (type !== undefined && type !== 'text' && type !== 'video') {
-        res.status(400).json({ message: 'Type must be either "text" or "video"' });
-        return;
-      }
-
-      const postData: Partial<Omit<Post, 'id'>> = {};
-
-      if (title !== undefined) postData.title = title;
-      if (userId !== undefined) postData.userId = parseInt(userId);
-      if (content !== undefined) postData.content = content;
-      if (type !== undefined) postData.type = type as 'text' | 'video';
-
-      const updatedPost = await this.postRepository.update(id, postData);
-      res.status(200).json(updatedPost);
-    } catch (error) {
-      console.error('Failed to update post:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.json(updatedPost);
+    } catch {
+      res.status(500).json({ message: "Error updating post" });
     }
-  }
+  };
 
-  /**
-   * Delete a post
-   * @route DELETE /api/posts/:id
-   */
-  async deletePost(req: Request, res: Response): Promise<void> {
+  deletePost = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid post id" });
+    }
+
     try {
-      const id = parseInt(req.params.id);
-
-      if (isNaN(id)) {
-        res.status(400).json({ message: 'Invalid post ID' });
-        return;
+      const success = await this.postRepository.delete(id);
+      if (!success) {
+        return res.status(404).json({ message: "Post not found" });
       }
 
-      const deleted = await this.postRepository.delete(id);
-
-      if (!deleted) {
-        res.status(404).json({ message: 'Post not found' });
-        return;
-      }
-
-      res.status(204).end();
-    } catch (error) {
-      console.error('Failed to delete post:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(204).send();
+    } catch {
+      res.status(500).json({ message: "Error deleting post" });
     }
-  }
+  };
 }
-
-export default PostController;

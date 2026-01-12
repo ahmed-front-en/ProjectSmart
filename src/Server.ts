@@ -1,80 +1,108 @@
-import express, { Express, Request, Response } from "express";
-import PostController from "./controllers/PostController";
-import UserController from "./controllers/UserController";
-import DatabaseService from "./services/DatabaseService";
+import express, { Express } from "express";
+
+import { UserController } from "./controllers/UserController";
+import { PostController } from "./controllers/PostController";
+import { CommentController } from "./controllers/CommentController";
+import { ActionController } from "./controllers/ActionController";
+import { DatabaseService } from "./services/DatabaseService";
 
 export class Server {
   private app: Express;
-  public static dbService: DatabaseService;
-  private userController: UserController;
-  private postController: PostController;
+  public dbService: DatabaseService;
 
   constructor(dbService: DatabaseService) {
     this.app = express();
     this.app.use(express.json());
-    Server.dbService = dbService;
-    this.userController = new UserController();
-    this.postController = new PostController();
-    this.setupRoutes();
+    this.dbService = dbService;
+    this.setUpRoutes();
   }
 
-  /**
-   * Set up all API routes
-   */
-  private setupRoutes(): void {
+  private setUpRoutes(): void {
+    const userController = new UserController();
+    const postController = new PostController();
+    const commentController = new CommentController();
+    const actionController = new ActionController();
 
-    // User routes - Define all five routes directly
+    /* =========================
+       USER RELATED ROUTES
+    ========================== */
 
-    // 1. GET all users
-    this.app.get('/users', (req: Request, res: Response) =>
-      this.userController.getAllUsers(req, res));
+    // User → Posts / Comments / Actions (specific first)
+    this.app.get(
+      "/users/:userId/posts",
+      postController.getPostsByUserId
+    );
+    this.app.get(
+      "/users/:userId/comments",
+      commentController.getCommentsByUserId
+    );
+    this.app.get(
+      "/users/:userId/actions",
+      actionController.getActionsByUserId
+    );
 
-    // 2. GET user by id
-    this.app.get('/users/:id', (req: Request, res: Response) =>
-      this.userController.getUserById(req, res));
+    // User CRUD
+    this.app.get("/users", userController.getAllUsers);
+    this.app.get("/users/:id", userController.getUserById);
+    this.app.post("/users", userController.createUser);
+    this.app.patch("/users/:id", userController.updateUser);
+    this.app.delete("/users/:id", userController.deleteUser);
 
-    // 3. POST user (create)
-    this.app.post('/users', (req: Request, res: Response) =>
-      this.userController.createUser(req, res));
+    /* =========================
+       POST RELATED ROUTES
+    ========================== */
 
-    // 4. PATCH user (update)
-    this.app.patch('/users/:id', (req: Request, res: Response) =>
-      this.userController.updateUser(req, res));
+    // Search & relations first
+    this.app.get(
+      "/posts/search",
+      postController.searchPostsByTitle
+    );
+    this.app.get(
+      "/posts/:postId/comments",
+      commentController.getCommentsByPostId
+    );
+    this.app.get(
+      "/posts/:postId/actions",
+      actionController.getActionsByPostId
+    );
 
-    // 5. DELETE user
-    this.app.delete('/users/:id', (req: Request, res: Response) =>
-      this.userController.deleteUser(req, res));
+    // Post CRUD
+    this.app.get("/posts", postController.getAllPosts);
+    this.app.get("/posts/:id", postController.getPostById);
+    this.app.post("/posts", postController.createPost);
+    this.app.patch("/posts/:id", postController.updatePost);
+    this.app.delete("/posts/:id", postController.deletePost);
 
-    // Post routes
+    /* =========================
+       COMMENT RELATED ROUTES
+    ========================== */
 
-    // 1. GET all posts
-    this.app.get('/posts', (req: Request, res: Response) =>
-      this.postController.getAllPosts(req, res));
+    this.app.get("/comments", commentController.getAllComments);
+    this.app.get("/comments/:id", commentController.getCommentById);
+    this.app.post("/comments", commentController.createComment);
+    this.app.patch("/comments/:id", commentController.updateComment);
+    this.app.delete("/comments/:id", commentController.deleteComment);
 
-    // 2. GET post by id
-    this.app.get('/posts/:id', (req: Request, res: Response) =>
-      this.postController.getPostById(req, res));
+    // Comment → Actions
+    this.app.get(
+      "/comments/:commentId/actions",
+      actionController.getActionsByCommentId
+    );
 
-    // 3. GET posts by user id
-    this.app.get('/posts/user/:userId', (req: Request, res: Response) =>
-      this.postController.getPostsByUserId(req, res));
+    /* =========================
+       ACTION CRUD ROUTES
+    ========================== */
 
-    // 4. POST post (create)
-    this.app.post('/posts', (req: Request, res: Response) =>
-      this.postController.createPost(req, res));
-
-    // 5. PATCH post (update)
-    this.app.patch('/posts/:id', (req: Request, res: Response) =>
-      this.postController.updatePost(req, res));
-
-    // 6. DELETE post
-    this.app.delete('/posts/:id', (req: Request, res: Response) =>
-      this.postController.deletePost(req, res));
+    this.app.get("/actions", actionController.getAllActions);
+    this.app.get("/actions/:id", actionController.getActionById);
+    this.app.post("/actions", actionController.createAction);
+    this.app.patch("/actions/:id", actionController.updateAction);
+    this.app.delete("/actions/:id", actionController.deleteAction);
   }
 
-  public start(port: number) {
+  public start(port: number): void {
     this.app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
+      console.log(`🚀 Server running on http://localhost:${port}`);
     });
   }
 }
